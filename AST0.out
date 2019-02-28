@@ -1,0 +1,122 @@
+ DataPlotsProgram
+  \__list
+         \__=
+         |   \__DP
+         |   \__def
+         |         \__literal
+         |                   \__pair
+         |                   |      \__2
+         |                   |      \__3
+         |                   \__pair
+         |                          \__3
+         |                          \__4
+         \__=
+         |   \__DP1
+         |   \__def
+         |         \__literal
+         |         |         \__pair
+         |         |                \__2
+         |         |                \__5
+         |         \__literal
+         |         |         \__pair
+         |         |         |      \__3
+         |         |         |      \__3
+         |         |         \__pair
+         |         |                \__7
+         |         |                \__4
+         |         \__literal
+         |                   \__pair
+         |                          \__12
+         |                          \__3
+         \__PLOT
+         |      \__def
+         |            \__DP
+         \__=
+         |   \__DP2
+         |   \__NORMALIZE
+         |               \__def
+         |                     \__DP
+         \__PLOT
+         |      \__def
+         |            \__DP2
+         \__LOGPLOT
+         |         \__def
+         |               \__DP2
+         \__=
+         |   \__DP3
+         |   \__def
+         |         \__DP2
+         |         \__literal
+         |         |         \__pair
+         |         |         |      \__3
+         |         |         |      \__4
+         |         |         \__pair
+         |         |                \__13
+         |         |                \__3
+         |         \__DP
+         \__=
+         |   \__DP4
+         |   \__POP
+         |         \__def
+         |               \__DP3
+         \__=
+         |   \__DP5
+         |   \__PUSH
+         |          \__POP
+         |          |     \__def
+         |          |           \__DP3
+         |          \__pair
+         |                 \__7
+         |                 \__6
+         \__PLOT
+         |      \__NORMALIZE
+         |                  \__def
+         |                        \__DP5
+         |                        \__literal
+         |                                  \__pair
+         |                                  |      \__3
+         |                                  |      \__4
+         |                                  \__pair
+         |                                         \__23
+         |                                         \__13
+         \__WHILE
+         |       \__NOT
+         |       |     \__EMPTY
+         |       |             \__def
+         |       |                   \__DP5
+         |       \__list
+         |              \__=
+         |              |   \__DP5
+         |              |   \__POP
+         |              |         \__def
+         |              |               \__DP5
+         |              \__PLOT
+         |                     \__def
+         |                           \__DP5
+         \__IF
+         |    \__NOT
+         |    |     \__CHECK
+         |    |             \__def
+         |    |                   \__DP4
+         |    \__list
+         |           \__=
+         |               \__DP6
+         |               \__AMEND
+         |                       \__def
+         |                             \__DP4
+         \__WHILE
+                 \__!=
+                 |    \__ITH
+                 |    |     \__3
+                 |    |     \__def
+                 |    |           \__DP4
+                 |    \__ITH
+                 |          \__2
+                 |          \__def
+                 |                \__DP1
+                 \__list
+                        \__=
+                            \__DP4
+                            \__POP
+                                  \__def
+                                        \__DP4
