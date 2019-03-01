@@ -34,7 +34,7 @@ map<string, list<pair<int, int> > > dps;
 
 // function to fill token information
 void zzcr_attr(Attrib *attr, int type, char *text) {
-  if (type == NUM) {
+  /*if (type == NUM) {
     attr->kind = "intconst";
     attr->text = text;
   }
@@ -42,16 +42,16 @@ void zzcr_attr(Attrib *attr, int type, char *text) {
   	attr->kind = "charconst";
   	attr->text = text;
   }
-  else {
+  else {*/
     attr->kind = text;
     attr->text = "";
-  }
+  //}
 }
 
 AST* createASTstring(AST* child, char* kind) {
 	AST* as = new AST;
 	as->kind = kind; 
-	as->text = NULL;
+	as->text = "";
 	as->right = NULL; 
 	as->down = child;
 	return as;
@@ -170,9 +170,9 @@ int main() {
 #token AMEND "AMEND"
 #token PLOT "PLOT"
 #token LOGPLOT "LOGPLOT"
-#token WHILE "\WHILE"
+#token WHILE "WHILE"
 #token ENDWHILE "ENDWHILE"
-#token IF "\IF"
+#token IF "IF"
 #token ENDIF "ENDIF"
 
 #token ID "[a-zA-Z]+[a-zA-Z0-9]*"
@@ -186,17 +186,19 @@ instruction: ID ASIG^ returnList
 	| IF^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDIF!
 	| WHILE^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDWHILE!
 	;
-returnList: def
+returnList: def (CONC! def)*
 	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP!
 	| PUSH^ OP! returnList COMA! onePair CP!
 	;
 plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
 
-onePair: OA NUM COMA NUM CA ;
-def: ((expr | ID) (CONC (expr | ID))*) ;
-expr: OB! OA! NUM COMA! NUM CA! (COMA! OA! NUM COMA! NUM CA!)* CB! ;
-booleanExpr: (NOT | ) ((EMPTY | CHECK) OP! ID CP! | ith (EQ | NEQ | CA | OA) ith) ;
-ith: ITH OP! NUM COMA! ID CP! ;
+onePair: OA^ NUM COMA! NUM CA! ;
+
+def: OB^ expr (COMA! expr)* CB! | ID ;
+expr: OA^ NUM COMA! NUM CA! ;
+
+booleanExpr: (NOT | ) ((EMPTY^ | CHECK^) OP! ID CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
+ith: ITH^ OP! NUM COMA! ID CP! ;
 
 //program: (instruction)* ;
 //instruction: ID ASIG^ expr | WRITE^ expr ;

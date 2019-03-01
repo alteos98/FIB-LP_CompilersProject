@@ -177,7 +177,7 @@ LOGPLOT
 		NLA = LOGPLOT;
 	>>
 
-\WHILE
+WHILE
 	<<
 		NLA = WHILE;
 	>>
@@ -187,7 +187,7 @@ ENDWHILE
 		NLA = ENDWHILE;
 	>>
 
-\IF
+IF
 	<<
 		NLA = IF;
 	>>
