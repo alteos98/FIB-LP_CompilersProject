@@ -48,10 +48,10 @@ void zzcr_attr(Attrib *attr, int type, char *text) {
   }
 }
 
-AST* createASTstring(AST* child, char* text) {
+AST* createASTstring(AST* child, char* kind) {
 	AST* as = new AST;
-	as->kind = "list"; 
-	as->text = text;
+	as->kind = kind; 
+	as->text = NULL;
 	as->right = NULL; 
 	as->down = child;
 	return as;
@@ -145,27 +145,28 @@ int main() {
 >>
 
 #lexclass START
-#token ID "[a-zA-Z]"
-#token NUM "[0-9]+"
-
 #token ASIG "\="
-#token LIST_L "\["
-#token LIST_R "\]"
-#token PAIR_L "\<"
-#token PAIR_R "\>"
-#token PAR_L "\("
-#token PAR_R "\)"
+#token OB "\["
+#token CB "\]"
+#token OA "\<"
+#token CA "\>"
+#token OP "\("
+#token CP "\)"
+#token COMA "\,"
 
 #token NOT "NOT"
 #token AND "AND"
 #token OR "OR"
+#token EQ "\=="
+#token NEQ "\!="
 
-#token CONC "\*"
+#token CONC "\·"
 #token POP "POP"
 #token PUSH "PUSH"
 #token NORMALIZE "NORMALIZE"
 #token CHECK "CHECK"
 #token ITH "ITH"
+#token EMPTY "EMPTY"
 #token AMEND "AMEND"
 #token PLOT "PLOT"
 #token LOGPLOT "LOGPLOT"
@@ -174,12 +175,28 @@ int main() {
 #token IF "\IF"
 #token ENDIF "ENDIF"
 
+#token ID "[a-zA-Z]+[a-zA-Z0-9]*"
+#token NUM "[0-9]+"
 #token SPACE "[\ \n]" << zzskip();>>
 
 plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>>;
 linterpretation: (instruction)* ;
-instruction: ID ASIG^ expr (CONC expr)* ;
-expr: NUM ;
+instruction: ID ASIG^ returnList
+	| plot
+	| IF^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDIF!
+	| WHILE^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDWHILE!
+	;
+returnList: def
+	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP!
+	| PUSH^ OP! returnList COMA! onePair CP!
+	;
+plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
+
+onePair: OA NUM COMA NUM CA ;
+def: ((expr | ID) (CONC (expr | ID))*) ;
+expr: OB! OA! NUM COMA! NUM CA! (COMA! OA! NUM COMA! NUM CA!)* CB! ;
+booleanExpr: (NOT | ) ((EMPTY | CHECK) OP! ID CP! | ith (EQ | NEQ | CA | OA) ith) ;
+ith: ITH OP! NUM COMA! ID CP! ;
 
 //program: (instruction)* ;
 //instruction: ID ASIG^ expr | WRITE^ expr ;
