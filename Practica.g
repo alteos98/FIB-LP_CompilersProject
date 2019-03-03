@@ -41,11 +41,19 @@ void zzcr_attr(Attrib *attr, int type, char *text) {
   else if (type == ID) {
   	attr->kind = "charconst";
   	attr->text = text;
+  }*/
+  if (type == OB) {
+    attr->kind = "literal";
+    attr->text = "";
   }
-  else {*/
+  else if (type == OA) {
+    attr->kind = "pair";
+    attr->text = "";
+  }
+  else {
     attr->kind = text;
     attr->text = "";
-  //}
+  }
 }
 
 AST* createASTstring(AST* child, char* kind) {
@@ -131,6 +139,47 @@ void execute(AST *a) {
 		m[child(a,0)->text] = evaluate(child(a,1));
 	else if (a->kind == "write")
 		cout << evaluate(child(a,0)) << endl;*/
+  else if (a->kind == "=") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "WHILE") {
+    while (evaluate(a->down) != 0) {
+      evaluate(a->down->right);
+    }
+  }
+  else if (a->kind == "IF") {
+    if (evaluate(a->down) != 0) {
+    	evaluate(a->down->right);
+    }
+  }
+  else if (a->kind == "PUSH") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "POP") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "PLOT") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "LOGPLOT") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "NORMALIZE") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "CHECK") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "AMEND") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "ITH") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+  else if (a->kind == "EMPTY") {
+    dps[child(a,0)->text] = evaluate(child(a,1));
+  }
+
 	
 	execute(a->right);
 }
@@ -159,6 +208,8 @@ int main() {
 #token OR "OR"
 #token EQ "\=="
 #token NEQ "\!="
+#token BT ">"
+#token LT "<"
 
 #token CONC "\·"
 #token POP "POP"
@@ -188,16 +239,15 @@ instruction: ID ASIG^ returnList
 	;
 returnList: def (CONC! def)*
 	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP!
-	| PUSH^ OP! returnList COMA! onePair CP!
+	| PUSH^ OP! returnList COMA! expr CP!
 	;
 plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
-
-onePair: OA^ NUM COMA! NUM CA! ;
 
 def: OB^ expr (COMA! expr)* CB! | ID ;
 expr: OA^ NUM COMA! NUM CA! ;
 
-booleanExpr: (NOT | ) ((EMPTY^ | CHECK^) OP! ID CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
+booleanExpr: (NOT^ | ) booleanExpr2;
+booleanExpr2: ((EMPTY^ | CHECK^) OP! ID CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
 ith: ITH^ OP! NUM COMA! ID CP! ;
 
 //program: (instruction)* ;
