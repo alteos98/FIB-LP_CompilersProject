@@ -79,9 +79,21 @@ extern void def();
 #endif
 
 #ifdef __USE_PROTOS
-void expr(AST**_root);
+void literal(AST**_root);
 #else
-extern void expr();
+extern void literal();
+#endif
+
+#ifdef __USE_PROTOS
+void pair1(AST**_root);
+#else
+extern void pair1();
+#endif
+
+#ifdef __USE_PROTOS
+void pair2(AST**_root);
+#else
+extern void pair2();
 #endif
 
 #ifdef __USE_PROTOS
@@ -102,6 +114,30 @@ void ith(AST**_root);
 extern void ith();
 #endif
 
+#ifdef __USE_PROTOS
+void ith2(AST**_root);
+#else
+extern void ith2();
+#endif
+
+#ifdef __USE_PROTOS
+void consequenceIf(AST**_root);
+#else
+extern void consequenceIf();
+#endif
+
+#ifdef __USE_PROTOS
+void consequenceWhile(AST**_root);
+#else
+extern void consequenceWhile();
+#endif
+
+#ifdef __USE_PROTOS
+void id(AST**_root);
+#else
+extern void id();
+#endif
+
 #endif
 extern SetWordType zzerr1[];
 extern SetWordType zzerr2[];
@@ -117,3 +153,4 @@ extern SetWordType zzerr9[];
 extern SetWordType zzerr10[];
 extern SetWordType zzerr11[];
 extern SetWordType setwd3[];
+extern SetWordType setwd4[];

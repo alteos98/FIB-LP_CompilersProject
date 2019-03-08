@@ -116,6 +116,11 @@ void ASTPrint(AST *a)
   }
 }
 
+list<pair<int, int> > evaluateAssignment(AST* a) {
+	list<pair<int, int> > hola;
+	return hola;
+}
+
 int evaluate(AST *a) {
 	if (a == NULL) return 0;
 	else if (a->kind == "intconst")
@@ -135,51 +140,25 @@ int evaluate(AST *a) {
 void execute(AST *a) {
 	if (a == NULL)
 		return;
-	/*else if (a->kind == "=")
-		m[child(a,0)->text] = evaluate(child(a,1));
-	else if (a->kind == "write")
-		cout << evaluate(child(a,0)) << endl;*/
-  else if (a->kind == "=") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "WHILE") {
-    while (evaluate(a->down) != 0) {
-      evaluate(a->down->right);
-    }
-  }
-  else if (a->kind == "IF") {
-    if (evaluate(a->down) != 0) {
-    	evaluate(a->down->right);
-    }
-  }
-  else if (a->kind == "PUSH") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "POP") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "PLOT") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "LOGPLOT") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "NORMALIZE") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "CHECK") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "AMEND") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "ITH") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "EMPTY") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-
+	/*else if (a->kind == "=") {
+		dps[child(a,0)->text] = evaluateAssignment(child(a,1));
+	}
+	else if (a->kind == "WHILE") {
+		while (evaluate(a->down) != 0) {
+			evaluate(a->down->right);
+		}
+	}
+	else if (a->kind == "IF") {
+		if (evaluate(a->down) != 0) {
+			evaluate(a->down->right);
+		}
+	}
+	else if (a->kind == "PLOT") {
+		//
+	}
+	else if (a->kind == "LOGPLOT") {
+		//
+	}*/
 	
 	execute(a->right);
 }
@@ -188,8 +167,7 @@ int main() {
   AST *root = NULL;
   ANTLR(plots(&root), stdin);
   ASTPrint(root);
-  execute(root);
-  //cout << evaluate(root) << endl;
+  //execute(root);
 }
 >>
 
@@ -208,8 +186,6 @@ int main() {
 #token OR "OR"
 #token EQ "\=="
 #token NEQ "\!="
-#token BT ">"
-#token LT "<"
 
 #token CONC "\·"
 #token POP "POP"
@@ -231,27 +207,29 @@ int main() {
 #token SPACE "[\ \n]" << zzskip();>>
 
 plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>>;
-linterpretation: (instruction)* ;
+linterpretation: <<#0=createASTstring(_sibling, "list");>> (instruction)* ;
 instruction: ID ASIG^ returnList
 	| plot
-	| IF^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDIF!
-	| WHILE^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! (instruction)* ENDWHILE!
+	| IF^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! consequenceIf
+  | WHILE^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! consequenceWhile
 	;
-returnList: def (CONC! def)*
-	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP!
-	| PUSH^ OP! returnList COMA! expr CP!
+returnList: def
+	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP! 
+	| PUSH^ OP! returnList COMA! pair1 CP!
 	;
 plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
 
-def: OB^ expr (COMA! expr)* CB! | ID ;
-expr: OA^ NUM COMA! NUM CA! ;
+def: <<#0=createASTstring(_sibling, "def");>> literal (CONC! literal)* ;
+literal: (<<#0=createASTstring(_sibling, "literal");>> OB! pair1 (COMA! pair1)* CB!) | ID ;
+pair1: <<#0=createASTstring(_sibling, "par");>> pair2 ;
+pair2: OA! NUM COMA! NUM CA! ;
 
 booleanExpr: (NOT^ | ) booleanExpr2;
-booleanExpr2: ((EMPTY^ | CHECK^) OP! ID CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
-ith: ITH^ OP! NUM COMA! ID CP! ;
+booleanExpr2: ((EMPTY^ | CHECK^) OP! id CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
+ith: ITH^ OP! NUM COMA! ith2 ;
+ith2: <<#0=createASTstring(_sibling, "def");>> ID CP! ;
 
-//program: (instruction)* ;
-//instruction: ID ASIG^ expr | WRITE^ expr ;
-//expr: term ((PLUS^ | MINUS^) term)* ;
-//term: atom ((MULT^ | DIV^) atom)* ;
-//atom: NUM | ID ;
+consequenceIf: <<#0=createASTstring(_sibling, "list");>> (instruction)* ENDIF! ;
+consequenceWhile: <<#0=createASTstring(_sibling, "list");>> (instruction)* ENDWHILE! ;
+
+id: <<#0=createASTstring(_sibling, "def");>> ID ;

@@ -1,0 +1,6 @@
+IF (NOT CHECK(DP3))
+    DP6 = AMEND(DP3)
+    IF (NOT CHECK(DP3))
+        DP6 = AMEND(DP3)
+    ENDIF
+ENDIF
