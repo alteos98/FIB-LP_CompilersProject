@@ -74,18 +74,10 @@ void zzcr_attr(Attrib *attr, int type, char *text) {
     attr->kind = "charconst";
     attr->text = text;
   }*/
-  if (type == OB) {
-    attr->kind = "literal";
-    attr->text = "";
-  }
-  else if (type == OA) {
-    attr->kind = "pair";
-    attr->text = "";
-  }
-  else {
+  //else {
     attr->kind = text;
     attr->text = "";
-  }
+    //}
 }
 
 AST* createASTstring(AST* child, char* kind) {
@@ -148,6 +140,36 @@ void ASTPrint(AST *a)
   }
 }
 
+int evaluateInt(AST* a) {
+  return atoi(a->kind.c_str());
+}
+
+list<pair<int, int> > evaluateList(AST* a) {
+  list<pair<int, int> > listOfPairs;
+  if (a == NULL) {
+    return listOfPairs;
+  }
+  else if (a->kind == "par") {
+    listOfPairs.push_back(make_pair(evaluateInt(child(a,0)), evaluateInt(child(a,1))));
+  }
+  else if (a->kind == "literal") {
+    list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
+    int i = 1;
+    while (!auxiliarList.empty()) {
+      listOfPairs.push_back(auxiliarList.front());
+      auxiliarList = evaluateList(child(a,i));
+      ++i;
+    }
+  }
+  else if (a->kind == "def") {
+    return evaluateList(a->down);
+  }
+  else { // numbers
+    
+  }
+  return listOfPairs;
+}
+
 int evaluate(AST *a) {
   if (a == NULL) return 0;
   else if (a->kind == "intconst")
@@ -167,14 +189,15 @@ int evaluate(AST *a) {
 void execute(AST *a) {
   if (a == NULL)
   return;
-  /*else if (a->kind == "=")
-  m[child(a,0)->text] = evaluate(child(a,1));
-  else if (a->kind == "write")
-  cout << evaluate(child(a,0)) << endl;
+  else if (a->kind == "list")
+  return execute(a->down);
   else if (a->kind == "=") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
+    dps[child(a,0)->text] = evaluateList(child(a,1));
+    cout << dps[child(a,0)->text].size() << endl;
+    cout << dps[child(a,0)->text].back().first << endl;
+    cout << dps[child(a,0)->text].back().second << endl;
   }
-  else if (a->kind == "WHILE") {
+  /*else if (a->kind == "WHILE") {
     while (evaluate(a->down) != 0) {
       evaluate(a->down->right);
     }
@@ -184,44 +207,22 @@ void execute(AST *a) {
       evaluate(a->down->right);
     }
   }
-  else if (a->kind == "PUSH") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "POP") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
   else if (a->kind == "PLOT") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
+    //
   }
   else if (a->kind == "LOGPLOT") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "NORMALIZE") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "CHECK") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "AMEND") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "ITH") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
-  }
-  else if (a->kind == "EMPTY") {
-    dps[child(a,0)->text] = evaluate(child(a,1));
+    //
   }*/
   
-	
-  execute(a->right);
+	execute(a->right);
 }
 
 int main() {
   AST *root = NULL;
   ANTLR(plots(&root), stdin);
   ASTPrint(root);
-  //execute(root);
-  //cout << evaluate(root) << endl;
+  //cout << root->down->down->kind << endl;
+  execute(root->down);
 }
 
 void

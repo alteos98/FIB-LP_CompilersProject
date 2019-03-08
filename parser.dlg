@@ -127,16 +127,6 @@ OR
 		NLA = NEQ;
 	>>
 
->
-	<<
-		NLA = BT;
-	>>
-
-<
-	<<
-		NLA = LT;
-	>>
-
 \·
 	<<
 		NLA = CONC;

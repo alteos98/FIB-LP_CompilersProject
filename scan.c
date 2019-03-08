@@ -152,113 +152,101 @@ static void act14()
 
 static void act15()
 { 
-		NLA = BT;
+		NLA = CONC;
 	}
 
 
 static void act16()
 { 
-		NLA = LT;
+		NLA = POP;
 	}
 
 
 static void act17()
 { 
-		NLA = CONC;
+		NLA = PUSH;
 	}
 
 
 static void act18()
 { 
-		NLA = POP;
+		NLA = NORMALIZE;
 	}
 
 
 static void act19()
 { 
-		NLA = PUSH;
+		NLA = CHECK;
 	}
 
 
 static void act20()
 { 
-		NLA = NORMALIZE;
+		NLA = ITH;
 	}
 
 
 static void act21()
 { 
-		NLA = CHECK;
+		NLA = EMPTY;
 	}
 
 
 static void act22()
 { 
-		NLA = ITH;
+		NLA = AMEND;
 	}
 
 
 static void act23()
 { 
-		NLA = EMPTY;
+		NLA = PLOT;
 	}
 
 
 static void act24()
 { 
-		NLA = AMEND;
+		NLA = LOGPLOT;
 	}
 
 
 static void act25()
 { 
-		NLA = PLOT;
+		NLA = WHILE;
 	}
 
 
 static void act26()
 { 
-		NLA = LOGPLOT;
+		NLA = ENDWHILE;
 	}
 
 
 static void act27()
 { 
-		NLA = WHILE;
+		NLA = IF;
 	}
 
 
 static void act28()
 { 
-		NLA = ENDWHILE;
+		NLA = ENDIF;
 	}
 
 
 static void act29()
 { 
-		NLA = IF;
+		NLA = ID;
 	}
 
 
 static void act30()
 { 
-		NLA = ENDIF;
-	}
-
-
-static void act31()
-{ 
-		NLA = ID;
-	}
-
-
-static void act32()
-{ 
 		NLA = NUM;
 	}
 
 
-static void act33()
+static void act31()
 { 
 		NLA = SPACE;
     zzskip();  
@@ -2763,18 +2751,18 @@ DfaState *dfa[83] = {
 
 
 DfaState accepts[84] = {
-  0, 1, 33, 0, 7, 8, 9, 32, 5, 2, 
-  6, 31, 31, 31, 31, 31, 31, 31, 31, 31, 
-  31, 3, 4, 0, 14, 13, 31, 31, 31, 31, 
-  31, 31, 31, 29, 31, 31, 31, 12, 31, 31, 
-  31, 31, 17, 31, 11, 31, 31, 31, 22, 31, 
-  31, 10, 31, 18, 31, 31, 31, 31, 31, 31, 
-  31, 31, 31, 25, 19, 31, 24, 21, 23, 30, 
-  31, 31, 31, 27, 31, 31, 31, 31, 26, 31, 
-  28, 31, 20, 0
+  0, 1, 31, 0, 7, 8, 9, 30, 5, 2, 
+  6, 29, 29, 29, 29, 29, 29, 29, 29, 29, 
+  29, 3, 4, 0, 14, 13, 29, 29, 29, 29, 
+  29, 29, 29, 27, 29, 29, 29, 12, 29, 29, 
+  29, 29, 15, 29, 11, 29, 29, 29, 20, 29, 
+  29, 10, 29, 16, 29, 29, 29, 29, 29, 29, 
+  29, 29, 29, 23, 17, 29, 22, 19, 21, 28, 
+  29, 29, 29, 25, 29, 29, 29, 29, 24, 29, 
+  26, 29, 18, 0
 };
 
-void (*actions[34])() = {
+void (*actions[32])() = {
 	zzerraction,
 	act1,
 	act2,
@@ -2806,9 +2794,7 @@ void (*actions[34])() = {
 	act28,
 	act29,
 	act30,
-	act31,
-	act32,
-	act33
+	act31
 };
 
 static DfaState dfa_base[] = {

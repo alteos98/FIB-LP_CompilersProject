@@ -22,25 +22,23 @@
 #define OR 12
 #define EQ 13
 #define NEQ 14
-#define BT 15
-#define LT 16
-#define CONC 17
-#define POP 18
-#define PUSH 19
-#define NORMALIZE 20
-#define CHECK 21
-#define ITH 22
-#define EMPTY 23
-#define AMEND 24
-#define PLOT 25
-#define LOGPLOT 26
-#define WHILE 27
-#define ENDWHILE 28
-#define IF 29
-#define ENDIF 30
-#define ID 31
-#define NUM 32
-#define SPACE 33
+#define CONC 15
+#define POP 16
+#define PUSH 17
+#define NORMALIZE 18
+#define CHECK 19
+#define ITH 20
+#define EMPTY 21
+#define AMEND 22
+#define PLOT 23
+#define LOGPLOT 24
+#define WHILE 25
+#define ENDWHILE 26
+#define IF 27
+#define ENDIF 28
+#define ID 29
+#define NUM 30
+#define SPACE 31
 
 #ifdef __USE_PROTOS
 void plots(AST**_root);
