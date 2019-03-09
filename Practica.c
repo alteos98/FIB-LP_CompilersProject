@@ -130,9 +130,9 @@ void ASTPrint(AST *a)
   }
 }
 
+// prints all the list passed as a parameter
 void printListOfPairs(list<pair<int, int> > listOfPairs) {
   list<pair<int, int> >::iterator it = listOfPairs.begin();
-  cout << "PLOT: ";
   while (it != listOfPairs.end()) {
     if (it != listOfPairs.begin())
     cout << ", ";
@@ -142,7 +142,7 @@ void printListOfPairs(list<pair<int, int> > listOfPairs) {
   cout << endl;
 }
 
-// compare two pairs only looking for the first component
+// compares two pairs only looking for the first component
 bool compareTwoPairs(pair<int, int> pairOne, pair<int, int> pairTwo) {
   if (pairOne.first < pairTwo.first)
   return true;
@@ -150,230 +150,263 @@ bool compareTwoPairs(pair<int, int> pairOne, pair<int, int> pairTwo) {
   return false;
 }
 
+// returns the number that it's in the node passed as a parameter
 int evaluateInt(AST* a) {
-  return atoi(a->kind.c_str());
+return atoi(a->kind.c_str());
 }
 
+// evaluates the tree returning the correspondent dataset
 list<pair<int, int> > evaluateList(AST* a) {
-  list<pair<int, int> > listOfPairs;
+list<pair<int, int> > listOfPairs;
+
   if (a == NULL) {
-    //return listOfPairs;
-  }
-  else if (a->kind == "par") {
-    listOfPairs.push_back(make_pair(evaluateInt(child(a,0)), evaluateInt(child(a,1))));
-  }
-  else if (a->kind == "literal") {
-    int i = 1;
-    list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
-    
-    while (!auxiliarList.empty()) {
-      listOfPairs.push_back(auxiliarList.front());
-      auxiliarList = evaluateList(child(a,i));
-      ++i;
-    }
-  }
-  else if (a->kind == "def") {
-    int i = 1;
-    list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
-    
-    while (!auxiliarList.empty()) {
-      while (!auxiliarList.empty()) {
-        listOfPairs.push_back(auxiliarList.front());
-        auxiliarList.pop_front();
-      }
-      auxiliarList = evaluateList(child(a,i));
-      ++i;
-    }
-  }
-  else if (a->kind == "POP") {
-    listOfPairs = evaluateList(child(a,0));
-    if (!listOfPairs.empty())
-    listOfPairs.pop_back();
-    else
-    cout << "This dataset is empty, it's not possible to do POP" << endl;
-  }
-  else if (a->kind == "PUSH") {
-    listOfPairs = evaluateList(child(a,0));
-    listOfPairs.push_back(evaluateList(child(a,1)).front());
-  }
-  else if (a->kind == "NORMALIZE") {
-    int minX, minY;
-    listOfPairs = evaluateList(child(a,0));
-    list<pair<int, int> >::iterator it = listOfPairs.begin();
-    
-    // the first element
-    minX = (*it).first;
-    minY = (*it).second;
-    
-    while (it != listOfPairs.end()) {
-      if ((*it).first < minX)
-      minX = (*it).first;
-      if ((*it).second < minY)
-      minY = (*it).second;
-      it = next(it);
-    }
-    
-    // substraction of the minor X and Y
-    it = listOfPairs.begin();
-    while (it != listOfPairs.end()) {
-      (*it).first = (*it).first - minX;
-      (*it).second = (*it).second - minY;
-      it = next(it);
-    }
-  }
-  else if (a->kind == "AMEND") {
-    list<pair<int, int> > initialList = evaluateList(child(a,0));
-    list<pair<int, int> >::iterator it = initialList.begin();
-    list<pair<int, int> >::iterator itAux;
-    bool sameX;
-    
-    while (it != initialList.end()) {
-      itAux = listOfPairs.begin();
-      sameX = false;
-      while (sameX == false and itAux != listOfPairs.end()) {
-        if ((*it).first == (*itAux).first)
-        sameX = true;
-        itAux = next(itAux);
-      }
-      if (!sameX)
-      listOfPairs.push_back((*it));
-      it = next(it);
-    }
-  }
-  else if (a->kind == "ITH") {
-    int position = evaluateInt(child(a,0));
-    list<pair<int, int> > initialList = evaluateList(child(a,1));
-    list<pair<int, int> >::iterator it = initialList.begin();
-    
-    if (position > initialList.size())
-    return listOfPairs;
-    
-    // find the 'position'-th element
-    for (int i=0; i < position; ++i) {
-      it = next(it);
-    }
-    listOfPairs.push_back((*it));
-  }
-  else { // ID
-    map<string,list<pair<int, int> > >::iterator it = dps.find(a->kind);
-    if (it != dps.end())
-    listOfPairs = dps[a->kind];
-    else
-    cout << a->kind + " was not declared" << endl;
-  }
-  return listOfPairs;
+//return listOfPairs;
 }
 
+  else if (a->kind == "par") {
+listOfPairs.push_back(make_pair(evaluateInt(child(a,0)), evaluateInt(child(a,1))));
+}
+
+  else if (a->kind == "literal") {
+int i = 1;
+list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
+
+    while (!auxiliarList.empty()) {
+listOfPairs.push_back(auxiliarList.front());
+auxiliarList = evaluateList(child(a,i));
+++i;
+}
+}
+
+  else if (a->kind == "def") {
+int i = 1;
+list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
+
+    while (!auxiliarList.empty()) {
+while (!auxiliarList.empty()) {
+listOfPairs.push_back(auxiliarList.front());
+auxiliarList.pop_front();
+}
+auxiliarList = evaluateList(child(a,i));
+++i;
+}
+}
+
+  else if (a->kind == "POP") {
+listOfPairs = evaluateList(child(a,0));
+if (!listOfPairs.empty())
+listOfPairs.pop_back();
+else
+cout << "This dataset is empty, it's not possible to do POP" << endl;
+}
+
+  else if (a->kind == "PUSH") {
+listOfPairs = evaluateList(child(a,0));
+listOfPairs.push_back(evaluateList(child(a,1)).front());
+}
+
+  else if (a->kind == "NORMALIZE") {
+int minX, minY;
+listOfPairs = evaluateList(child(a,0));
+list<pair<int, int> >::iterator it = listOfPairs.begin();
+
+    // the first element
+minX = (*it).first;
+minY = (*it).second;
+
+    while (it != listOfPairs.end()) {
+if ((*it).first < minX)
+minX = (*it).first;
+if ((*it).second < minY)
+minY = (*it).second;
+it = next(it);
+}
+
+    // substraction of the minor X and Y
+it = listOfPairs.begin();
+while (it != listOfPairs.end()) {
+(*it).first = (*it).first - minX;
+(*it).second = (*it).second - minY;
+it = next(it);
+}
+}
+
+  else if (a->kind == "AMEND") {
+list<pair<int, int> > initialList = evaluateList(child(a,0));
+list<pair<int, int> >::iterator it = initialList.begin();
+list<pair<int, int> >::iterator itAux;
+bool sameX;
+
+    while (it != initialList.end()) {
+itAux = listOfPairs.begin();
+sameX = false;
+while (sameX == false and itAux != listOfPairs.end()) {
+if ((*it).first == (*itAux).first)
+sameX = true;
+itAux = next(itAux);
+}
+if (!sameX)
+listOfPairs.push_back((*it));
+it = next(it);
+}
+}
+
+  else if (a->kind == "ITH") {
+int position = evaluateInt(child(a,0));
+list<pair<int, int> > initialList = evaluateList(child(a,1));
+list<pair<int, int> >::iterator it = initialList.begin();
+
+    if (position > initialList.size())
+return listOfPairs;
+
+    // find the 'position'-th element
+for (int i=0; i < position; ++i) {
+it = next(it);
+}
+listOfPairs.push_back((*it));
+}
+
+  else { // ID
+map<string,list<pair<int, int> > >::iterator it = dps.find(a->kind);
+if (it != dps.end())
+listOfPairs = dps[a->kind];
+else
+cout << a->kind + " was not declared" << endl;
+}
+
+	return listOfPairs;
+}
+
+// evaluates the boolean function
 bool evaluateCondition(AST* a) {
-  bool result;
+bool result;
+
   if (a->kind == "NOT")
-  result = !evaluateCondition(child(a,0));
+result = !evaluateCondition(child(a,0));
+
   else if (a->kind == "CHECK") {
-    result = true;
-    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
-    listOfPairs.sort(compareTwoPairs);
-    
+result = true;
+list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+listOfPairs.sort(compareTwoPairs);
+
     list<pair<int, int> >::iterator it = listOfPairs.begin();
-    list<pair<int, int> >::iterator itAux = listOfPairs.begin();
-    it = next(it);
-    while (result and it != listOfPairs.end()) {
-      if ((*it).first == (*itAux).first)
-      result = false;
-      it = next(it);
-      itAux = next(itAux);
-    }
-  }
+list<pair<int, int> >::iterator itAux = listOfPairs.begin();
+it = next(it);
+while (result and it != listOfPairs.end()) {
+if ((*it).first == (*itAux).first)
+result = false;
+it = next(it);
+itAux = next(itAux);
+}
+}
+
   else if (a->kind == "EMPTY") {
-    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
-    if (listOfPairs.empty())
-    result = true;
-    else
-    result = false;
-  }
+list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+if (listOfPairs.empty())
+result = true;
+else
+result = false;
+}
+
   else if (a->kind == "==") {
-    list<pair<int, int> > pairOne = evaluateList(child(a,0));
-    list<pair<int, int> > pairTwo = evaluateList(child(a,1));
-    if (pairOne.empty() or pairTwo.empty())
-    result = false;
-    else if (pairOne.front().first == pairTwo.front().first and pairOne.front().second == pairTwo.front().second)
-    result = true;
-    else
-    result = false;
-  }
+list<pair<int, int> > pairOne = evaluateList(child(a,0));
+list<pair<int, int> > pairTwo = evaluateList(child(a,1));
+if (pairOne.empty() or pairTwo.empty())
+result = false;
+else if (pairOne.front().first == pairTwo.front().first and pairOne.front().second == pairTwo.front().second)
+result = true;
+else
+result = false;
+}
+
   else if (a->kind == "!=") {
-    list<pair<int, int> > pairOne = evaluateList(child(a,0));
-    list<pair<int, int> > pairTwo = evaluateList(child(a,1));
-    if (pairOne.empty() or pairTwo.empty())
-    result = false;
-    else if (pairOne.front().first != pairTwo.front().first or pairOne.front().second != pairTwo.front().second)
-    result = true;
-    else
-    result = false;
-  }
+list<pair<int, int> > pairOne = evaluateList(child(a,0));
+list<pair<int, int> > pairTwo = evaluateList(child(a,1));
+if (pairOne.empty() or pairTwo.empty())
+result = false;
+else if (pairOne.front().first != pairTwo.front().first or pairOne.front().second != pairTwo.front().second)
+result = true;
+else
+result = false;
+}
+
   else if (a->kind == ">") {
-    list<pair<int, int> > pairOne = evaluateList(child(a,0));
-    list<pair<int, int> > pairTwo = evaluateList(child(a,1));
-    if (pairOne.empty() or pairTwo.empty())
-    result = false;
-    else if (pairOne.front().first > pairTwo.front().first or
-    (pairOne.front().first == pairTwo.front().first and pairOne.front().second > pairTwo.front().second))
-    result = true;
-    else
-    result = false;
-  }
+list<pair<int, int> > pairOne = evaluateList(child(a,0));
+list<pair<int, int> > pairTwo = evaluateList(child(a,1));
+if (pairOne.empty() or pairTwo.empty())
+result = false;
+else if (pairOne.front().first > pairTwo.front().first or
+(pairOne.front().first == pairTwo.front().first and pairOne.front().second > pairTwo.front().second))
+result = true;
+else
+result = false;
+}
+
   else if (a->kind == "<") {
-    list<pair<int, int> > pairOne = evaluateList(child(a,0));
-    list<pair<int, int> > pairTwo = evaluateList(child(a,1));
-    if (pairOne.empty() or pairTwo.empty())
-    result = false;
-    else if (pairOne.front().first < pairTwo.front().first or
-    (pairOne.front().first == pairTwo.front().first and pairOne.front().second < pairTwo.front().second))
-    result = true;
-    else
-    result = false;
-  }
+list<pair<int, int> > pairOne = evaluateList(child(a,0));
+list<pair<int, int> > pairTwo = evaluateList(child(a,1));
+if (pairOne.empty() or pairTwo.empty())
+result = false;
+else if (pairOne.front().first < pairTwo.front().first or
+(pairOne.front().first == pairTwo.front().first and pairOne.front().second < pairTwo.front().second))
+result = true;
+else
+result = false;
+}
+
   else if (a->kind == "AND") {}
+
   else if (a->kind == "OR") {}
+
   return result;
 }
 
+// executes the instructions
 void execute(AST *a) {
-  if (a == NULL)
-  return;
+if (a == NULL)
+return;
+
   else if (a->kind == "list")
-  return execute(a->down);
-  else if (a->kind == "=") {
-    dps[child(a,0)->kind] = evaluateList(child(a,1));
-  }
-  else if (a->kind == "WHILE") {
-    while (evaluateCondition(child(a,0))) {
-      execute(child(a,1));
-    }
-  }
-  else if (a->kind == "IF") {
-    if (evaluateCondition(child(a,0))) {
-      execute(child(a,1));
-    }
-  }
-  else if (a->kind == "PLOT") {
-    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
-    printListOfPairs(listOfPairs);
-  }
+return execute(a->down);
+
+	else if (a->kind == "=") {
+dps[child(a,0)->kind] = evaluateList(child(a,1));
+}
+
+	else if (a->kind == "WHILE") {
+while (evaluateCondition(child(a,0))) {
+execute(child(a,1));
+}
+}
+
+	else if (a->kind == "IF") {
+if (evaluateCondition(child(a,0))) {
+execute(child(a,1));
+}
+}
+
+	else if (a->kind == "PLOT") {
+list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+cout << "PLOT: ";
+printListOfPairs(listOfPairs);
+}
+
   // y = log(x) (?)
-  // TODO: de momento hace lo mismo que PLOT
-  else if (a->kind == "LOGPLOT") {
-    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
-    printListOfPairs(listOfPairs);
-  }
-  
+// TODO: de momento hace lo mismo que PLOT
+else if (a->kind == "LOGPLOT") {
+list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+cout << "LOGPLOT: ";
+printListOfPairs(listOfPairs);
+}
+
 	execute(a->right);
 }
 
 int main() {
-  AST *root = NULL;
-  ANTLR(plots(&root), stdin);
-  ASTPrint(root);
-  execute(root->down);
+AST *root = NULL;
+ANTLR(plots(&root), stdin);
+ASTPrint(root);
+execute(root->down);
 }
 
 void
@@ -459,74 +492,18 @@ AST **_root;
     else {
       if ( (LA(1)==IF) ) {
         zzmatch(IF); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
-        zzmatch(OP);  zzCONSUME;
-        booleanExpr(zzSTR); zzlink(_root, &_sibling, &_tail);
-        {
-          zzBLOCK(zztasp2);
-          zzMake0;
-          {
-          while ( (setwd1[LA(1)]&0x10) ) {
-            {
-              zzBLOCK(zztasp3);
-              zzMake0;
-              {
-              if ( (LA(1)==AND) ) {
-                zzmatch(AND); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
-              }
-              else {
-                if ( (LA(1)==OR) ) {
-                  zzmatch(OR); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
-                }
-                else {zzFAIL(1,zzerr1,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
-              }
-              zzEXIT(zztasp3);
-              }
-            }
-            booleanExpr(zzSTR); zzlink(_root, &_sibling, &_tail);
-            zzLOOP(zztasp2);
-          }
-          zzEXIT(zztasp2);
-          }
-        }
-        zzmatch(CP);  zzCONSUME;
-        consequenceIf(zzSTR); zzlink(_root, &_sibling, &_tail);
+        booleanExpr1(zzSTR); zzlink(_root, &_sibling, &_tail);
+        linterpretation(zzSTR); zzlink(_root, &_sibling, &_tail);
+        zzmatch(ENDIF);  zzCONSUME;
       }
       else {
         if ( (LA(1)==WHILE) ) {
           zzmatch(WHILE); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
-          zzmatch(OP);  zzCONSUME;
-          booleanExpr(zzSTR); zzlink(_root, &_sibling, &_tail);
-          {
-            zzBLOCK(zztasp2);
-            zzMake0;
-            {
-            while ( (setwd1[LA(1)]&0x20) ) {
-              {
-                zzBLOCK(zztasp3);
-                zzMake0;
-                {
-                if ( (LA(1)==AND) ) {
-                  zzmatch(AND); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
-                }
-                else {
-                  if ( (LA(1)==OR) ) {
-                    zzmatch(OR); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
-                  }
-                  else {zzFAIL(1,zzerr2,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
-                }
-                zzEXIT(zztasp3);
-                }
-              }
-              booleanExpr(zzSTR); zzlink(_root, &_sibling, &_tail);
-              zzLOOP(zztasp2);
-            }
-            zzEXIT(zztasp2);
-            }
-          }
-          zzmatch(CP);  zzCONSUME;
-          consequenceWhile(zzSTR); zzlink(_root, &_sibling, &_tail);
+          booleanExpr1(zzSTR); zzlink(_root, &_sibling, &_tail);
+          linterpretation(zzSTR); zzlink(_root, &_sibling, &_tail);
+          zzmatch(ENDWHILE);  zzCONSUME;
         }
-        else {zzFAIL(1,zzerr3,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+        else {zzFAIL(1,zzerr1,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
       }
     }
   }
@@ -535,7 +512,7 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd1, 0x40);
+  zzresynch(setwd1, 0x10);
   }
 }
 
@@ -551,11 +528,11 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
-  if ( (setwd1[LA(1)]&0x80) ) {
+  if ( (setwd1[LA(1)]&0x20) ) {
     def(zzSTR); zzlink(_root, &_sibling, &_tail);
   }
   else {
-    if ( (setwd2[LA(1)]&0x1) ) {
+    if ( (setwd1[LA(1)]&0x40) ) {
       {
         zzBLOCK(zztasp2);
         zzMake0;
@@ -571,7 +548,7 @@ AST **_root;
             if ( (LA(1)==AMEND) ) {
               zzmatch(AMEND); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
             }
-            else {zzFAIL(1,zzerr4,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+            else {zzFAIL(1,zzerr2,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
           }
         }
         zzEXIT(zztasp2);
@@ -590,7 +567,7 @@ AST **_root;
         pair1(zzSTR); zzlink(_root, &_sibling, &_tail);
         zzmatch(CP);  zzCONSUME;
       }
-      else {zzFAIL(1,zzerr5,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+      else {zzFAIL(1,zzerr3,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
     }
   }
   zzEXIT(zztasp1);
@@ -598,7 +575,7 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x2);
+  zzresynch(setwd1, 0x80);
   }
 }
 
@@ -625,7 +602,7 @@ AST **_root;
       if ( (LA(1)==LOGPLOT) ) {
         zzmatch(LOGPLOT); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
       }
-      else {zzFAIL(1,zzerr6,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+      else {zzFAIL(1,zzerr4,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
     }
     zzEXIT(zztasp2);
     }
@@ -638,7 +615,7 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x4);
+  zzresynch(setwd2, 0x1);
   }
 }
 
@@ -673,7 +650,7 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x8);
+  zzresynch(setwd2, 0x2);
   }
 }
 
@@ -718,14 +695,14 @@ AST **_root;
     if ( (LA(1)==ID) ) {
       zzmatch(ID); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
     }
-    else {zzFAIL(1,zzerr7,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+    else {zzFAIL(1,zzerr5,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
   }
   zzEXIT(zztasp1);
   return;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x10);
+  zzresynch(setwd2, 0x4);
   }
 }
 
@@ -748,7 +725,7 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x20);
+  zzresynch(setwd2, 0x8);
   }
 }
 
@@ -774,15 +751,15 @@ AST **_root;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd2, 0x40);
+  zzresynch(setwd2, 0x10);
   }
 }
 
 void
 #ifdef __USE_PROTOS
-booleanExpr(AST**_root)
+booleanExpr1(AST**_root)
 #else
-booleanExpr(_root)
+booleanExpr1(_root)
 AST **_root;
 #endif
 {
@@ -790,28 +767,42 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
+  zzmatch(OP);  zzCONSUME;
+  booleanExpr2(zzSTR); zzlink(_root, &_sibling, &_tail);
   {
     zzBLOCK(zztasp2);
     zzMake0;
     {
-    if ( (LA(1)==NOT) ) {
-      zzmatch(NOT); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
-    }
-    else {
-      if ( (setwd2[LA(1)]&0x80) ) {
+    while ( (setwd2[LA(1)]&0x20) ) {
+      {
+        zzBLOCK(zztasp3);
+        zzMake0;
+        {
+        if ( (LA(1)==AND) ) {
+          zzmatch(AND); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
+        }
+        else {
+          if ( (LA(1)==OR) ) {
+            zzmatch(OR); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
+          }
+          else {zzFAIL(1,zzerr6,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+        }
+        zzEXIT(zztasp3);
+        }
       }
-      else {zzFAIL(1,zzerr8,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+      booleanExpr2(zzSTR); zzlink(_root, &_sibling, &_tail);
+      zzLOOP(zztasp2);
     }
     zzEXIT(zztasp2);
     }
   }
-  booleanExpr2(zzSTR); zzlink(_root, &_sibling, &_tail);
+  zzmatch(CP);  zzCONSUME;
   zzEXIT(zztasp1);
   return;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd3, 0x1);
+  zzresynch(setwd2, 0x40);
   }
 }
 
@@ -831,7 +822,44 @@ AST **_root;
     zzBLOCK(zztasp2);
     zzMake0;
     {
-    if ( (setwd3[LA(1)]&0x2) ) {
+    if ( (LA(1)==NOT) ) {
+      zzmatch(NOT); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
+    }
+    else {
+      if ( (setwd2[LA(1)]&0x80) ) {
+      }
+      else {zzFAIL(1,zzerr7,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+    }
+    zzEXIT(zztasp2);
+    }
+  }
+  booleanExpr3(zzSTR); zzlink(_root, &_sibling, &_tail);
+  zzEXIT(zztasp1);
+  return;
+fail:
+  zzEXIT(zztasp1);
+  zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
+  zzresynch(setwd3, 0x1);
+  }
+}
+
+void
+#ifdef __USE_PROTOS
+booleanExpr3(AST**_root)
+#else
+booleanExpr3(_root)
+AST **_root;
+#endif
+{
+  zzRULE;
+  zzBLOCK(zztasp1);
+  zzMake0;
+  {
+  if ( (setwd3[LA(1)]&0x2) ) {
+    {
+      zzBLOCK(zztasp2);
+      zzMake0;
+      {
       {
         zzBLOCK(zztasp3);
         zzMake0;
@@ -843,17 +871,24 @@ AST **_root;
           if ( (LA(1)==CHECK) ) {
             zzmatch(CHECK); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
           }
-          else {zzFAIL(1,zzerr9,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+          else {zzFAIL(1,zzerr8,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
         }
         zzEXIT(zztasp3);
         }
       }
       zzmatch(OP);  zzCONSUME;
-      id(zzSTR); zzlink(_root, &_sibling, &_tail);
+      def(zzSTR); zzlink(_root, &_sibling, &_tail);
       zzmatch(CP);  zzCONSUME;
+      zzEXIT(zztasp2);
+      }
     }
-    else {
-      if ( (LA(1)==ITH) ) {
+  }
+  else {
+    if ( (LA(1)==ITH) ) {
+      {
+        zzBLOCK(zztasp2);
+        zzMake0;
+        {
         ith(zzSTR); zzlink(_root, &_sibling, &_tail);
         {
           zzBLOCK(zztasp3);
@@ -874,7 +909,7 @@ AST **_root;
                 if ( (LA(1)==OA) ) {
                   zzmatch(OA); zzsubroot(_root, &_sibling, &_tail); zzCONSUME;
                 }
-                else {zzFAIL(1,zzerr10,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
+                else {zzFAIL(1,zzerr9,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
               }
             }
           }
@@ -882,11 +917,11 @@ AST **_root;
           }
         }
         ith(zzSTR); zzlink(_root, &_sibling, &_tail);
+        zzEXIT(zztasp2);
+        }
       }
-      else {zzFAIL(1,zzerr11,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
     }
-    zzEXIT(zztasp2);
-    }
+    else {zzFAIL(1,zzerr10,&zzMissSet,&zzMissText,&zzBadTok,&zzBadText,&zzErrk); goto fail;}
   }
   zzEXIT(zztasp1);
   return;
@@ -913,127 +948,13 @@ AST **_root;
   zzmatch(OP);  zzCONSUME;
   zzmatch(NUM); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
   zzmatch(COMA);  zzCONSUME;
-  ith2(zzSTR); zzlink(_root, &_sibling, &_tail);
-  zzEXIT(zztasp1);
-  return;
-fail:
-  zzEXIT(zztasp1);
-  zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd3, 0x8);
-  }
-}
-
-void
-#ifdef __USE_PROTOS
-ith2(AST**_root)
-#else
-ith2(_root)
-AST **_root;
-#endif
-{
-  zzRULE;
-  zzBLOCK(zztasp1);
-  zzMake0;
-  {
-  (*_root)=createASTstring(_sibling, "def");
-  zzmatch(ID); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
+  def(zzSTR); zzlink(_root, &_sibling, &_tail);
   zzmatch(CP);  zzCONSUME;
   zzEXIT(zztasp1);
   return;
 fail:
   zzEXIT(zztasp1);
   zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd3, 0x10);
-  }
-}
-
-void
-#ifdef __USE_PROTOS
-consequenceIf(AST**_root)
-#else
-consequenceIf(_root)
-AST **_root;
-#endif
-{
-  zzRULE;
-  zzBLOCK(zztasp1);
-  zzMake0;
-  {
-  (*_root)=createASTstring(_sibling, "list");
-  {
-    zzBLOCK(zztasp2);
-    zzMake0;
-    {
-    while ( (setwd3[LA(1)]&0x20) ) {
-      instruction(zzSTR); zzlink(_root, &_sibling, &_tail);
-      zzLOOP(zztasp2);
-    }
-    zzEXIT(zztasp2);
-    }
-  }
-  zzmatch(ENDIF);  zzCONSUME;
-  zzEXIT(zztasp1);
-  return;
-fail:
-  zzEXIT(zztasp1);
-  zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd3, 0x40);
-  }
-}
-
-void
-#ifdef __USE_PROTOS
-consequenceWhile(AST**_root)
-#else
-consequenceWhile(_root)
-AST **_root;
-#endif
-{
-  zzRULE;
-  zzBLOCK(zztasp1);
-  zzMake0;
-  {
-  (*_root)=createASTstring(_sibling, "list");
-  {
-    zzBLOCK(zztasp2);
-    zzMake0;
-    {
-    while ( (setwd3[LA(1)]&0x80) ) {
-      instruction(zzSTR); zzlink(_root, &_sibling, &_tail);
-      zzLOOP(zztasp2);
-    }
-    zzEXIT(zztasp2);
-    }
-  }
-  zzmatch(ENDWHILE);  zzCONSUME;
-  zzEXIT(zztasp1);
-  return;
-fail:
-  zzEXIT(zztasp1);
-  zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd4, 0x1);
-  }
-}
-
-void
-#ifdef __USE_PROTOS
-id(AST**_root)
-#else
-id(_root)
-AST **_root;
-#endif
-{
-  zzRULE;
-  zzBLOCK(zztasp1);
-  zzMake0;
-  {
-  (*_root)=createASTstring(_sibling, "def");
-  zzmatch(ID); zzsubchild(_root, &_sibling, &_tail); zzCONSUME;
-  zzEXIT(zztasp1);
-  return;
-fail:
-  zzEXIT(zztasp1);
-  zzsyn(zzMissText, zzBadTok, (ANTLRChar *)"", zzMissSet, zzMissTok, zzErrk, zzBadText);
-  zzresynch(setwd4, 0x2);
+  zzresynch(setwd3, 0x8);
   }
 }

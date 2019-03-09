@@ -322,9 +322,19 @@ bool evaluateCondition(AST* a) {
       result = false;
   }
 
-  else if (a->kind == "AND") {}
+  else if (a->kind == "AND") {
+    if (evaluateCondition(child(a,0)) and evaluateCondition(child(a,1)))
+      result = true;
+    else
+      result = false;
+  }
 
-  else if (a->kind == "OR") {}
+  else if (a->kind == "OR") {
+    if (evaluateCondition(child(a,0)) or evaluateCondition(child(a,1)))
+      result = true;
+    else
+      result = false;
+  }
 
   return result;
 }
@@ -417,8 +427,8 @@ plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>
 linterpretation: <<#0=createASTstring(_sibling, "list");>> (instruction)* ;
 instruction: ID ASIG^ returnList
 	| plot
-	| IF^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! consequenceIf
-  | WHILE^ OP! booleanExpr ((AND | OR) booleanExpr)* CP! consequenceWhile
+	| IF^ booleanExpr1 linterpretation ENDIF!
+  | WHILE^ booleanExpr1 linterpretation ENDWHILE!
 	;
 returnList: def
 	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP! 
@@ -431,12 +441,7 @@ literal: (<<#0=createASTstring(_sibling, "literal");>> OB! pair1 (COMA! pair1)* 
 pair1: <<#0=createASTstring(_sibling, "par");>> pair2 ;
 pair2: OA! NUM COMA! NUM CA! ;
 
-booleanExpr: (NOT^ | ) booleanExpr2;
-booleanExpr2: ((EMPTY^ | CHECK^) OP! id CP! | ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
-ith: ITH^ OP! NUM COMA! ith2 ;
-ith2: <<#0=createASTstring(_sibling, "def");>> ID CP! ;
-
-consequenceIf: <<#0=createASTstring(_sibling, "list");>> (instruction)* ENDIF! ;
-consequenceWhile: <<#0=createASTstring(_sibling, "list");>> (instruction)* ENDWHILE! ;
-
-id: <<#0=createASTstring(_sibling, "def");>> ID ;
+booleanExpr1: OP! booleanExpr2 ((AND^ | OR^) booleanExpr2)* CP! ;
+booleanExpr2: (NOT^ | ) booleanExpr3;
+booleanExpr3: ((EMPTY^ | CHECK^) OP! def CP!) | (ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
+ith: ITH^ OP! NUM COMA! def CP! ;

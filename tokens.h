@@ -95,9 +95,9 @@ extern void pair2();
 #endif
 
 #ifdef __USE_PROTOS
-void booleanExpr(AST**_root);
+void booleanExpr1(AST**_root);
 #else
-extern void booleanExpr();
+extern void booleanExpr1();
 #endif
 
 #ifdef __USE_PROTOS
@@ -107,48 +107,28 @@ extern void booleanExpr2();
 #endif
 
 #ifdef __USE_PROTOS
+void booleanExpr3(AST**_root);
+#else
+extern void booleanExpr3();
+#endif
+
+#ifdef __USE_PROTOS
 void ith(AST**_root);
 #else
 extern void ith();
-#endif
-
-#ifdef __USE_PROTOS
-void ith2(AST**_root);
-#else
-extern void ith2();
-#endif
-
-#ifdef __USE_PROTOS
-void consequenceIf(AST**_root);
-#else
-extern void consequenceIf();
-#endif
-
-#ifdef __USE_PROTOS
-void consequenceWhile(AST**_root);
-#else
-extern void consequenceWhile();
-#endif
-
-#ifdef __USE_PROTOS
-void id(AST**_root);
-#else
-extern void id();
 #endif
 
 #endif
 extern SetWordType zzerr1[];
 extern SetWordType zzerr2[];
 extern SetWordType zzerr3[];
-extern SetWordType setwd1[];
 extern SetWordType zzerr4[];
+extern SetWordType setwd1[];
 extern SetWordType zzerr5[];
 extern SetWordType zzerr6[];
 extern SetWordType zzerr7[];
-extern SetWordType zzerr8[];
 extern SetWordType setwd2[];
+extern SetWordType zzerr8[];
 extern SetWordType zzerr9[];
 extern SetWordType zzerr10[];
-extern SetWordType zzerr11[];
 extern SetWordType setwd3[];
-extern SetWordType setwd4[];
