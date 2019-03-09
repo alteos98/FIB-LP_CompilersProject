@@ -142,6 +142,14 @@ void printListOfPairs(list<pair<int, int> > listOfPairs) {
   cout << endl;
 }
 
+// compare two pairs only looking for the first component
+bool compareTwoPairs(pair<int, int> pairOne, pair<int, int> pairTwo) {
+  if (pairOne.first < pairTwo.first)
+  return true;
+  else
+  return false;
+}
+
 int evaluateInt(AST* a) {
   return atoi(a->kind.c_str());
 }
@@ -260,7 +268,21 @@ bool evaluateCondition(AST* a) {
   bool result;
   if (a->kind == "NOT")
   result = !evaluateCondition(child(a,0));
-  else if (a->kind == "CHECK") {}
+  else if (a->kind == "CHECK") {
+    result = true;
+    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+    listOfPairs.sort(compareTwoPairs);
+    
+    list<pair<int, int> >::iterator it = listOfPairs.begin();
+    list<pair<int, int> >::iterator itAux = listOfPairs.begin();
+    it = next(it);
+    while (result and it != listOfPairs.end()) {
+      if ((*it).first == (*itAux).first)
+      result = false;
+      it = next(it);
+      itAux = next(itAux);
+    }
+  }
   else if (a->kind == "EMPTY") {
     list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
     if (listOfPairs.empty())
@@ -351,7 +373,6 @@ int main() {
   AST *root = NULL;
   ANTLR(plots(&root), stdin);
   ASTPrint(root);
-  //cout << root->down->down->kind << endl;
   execute(root->down);
 }
 

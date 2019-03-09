@@ -98,9 +98,9 @@ void ASTPrint(AST *a)
   }
 }
 
+// prints all the list passed as a parameter
 void printListOfPairs(list<pair<int, int> > listOfPairs) {
   list<pair<int, int> >::iterator it = listOfPairs.begin();
-  cout << "PLOT: ";
   while (it != listOfPairs.end()) {
     if (it != listOfPairs.begin())
       cout << ", ";
@@ -110,18 +110,31 @@ void printListOfPairs(list<pair<int, int> > listOfPairs) {
   cout << endl;
 }
 
+// compares two pairs only looking for the first component
+bool compareTwoPairs(pair<int, int> pairOne, pair<int, int> pairTwo) {
+  if (pairOne.first < pairTwo.first)
+    return true;
+  else
+    return false;
+}
+
+// returns the number that it's in the node passed as a parameter
 int evaluateInt(AST* a) {
   return atoi(a->kind.c_str());
 }
 
+// evaluates the tree returning the correspondent dataset
 list<pair<int, int> > evaluateList(AST* a) {
 	list<pair<int, int> > listOfPairs;
+
   if (a == NULL) {
     //return listOfPairs;
   }
+
   else if (a->kind == "par") {
     listOfPairs.push_back(make_pair(evaluateInt(child(a,0)), evaluateInt(child(a,1))));
   }
+
   else if (a->kind == "literal") {
     int i = 1;
     list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
@@ -132,6 +145,7 @@ list<pair<int, int> > evaluateList(AST* a) {
       ++i;
     }
   }
+
   else if (a->kind == "def") {
     int i = 1;
     list<pair<int, int> > auxiliarList = evaluateList(child(a,0));
@@ -145,6 +159,7 @@ list<pair<int, int> > evaluateList(AST* a) {
       ++i;
     }
   }
+
   else if (a->kind == "POP") {
     listOfPairs = evaluateList(child(a,0));
     if (!listOfPairs.empty())
@@ -152,10 +167,12 @@ list<pair<int, int> > evaluateList(AST* a) {
     else
       cout << "This dataset is empty, it's not possible to do POP" << endl;
   }
+
   else if (a->kind == "PUSH") {
     listOfPairs = evaluateList(child(a,0));
     listOfPairs.push_back(evaluateList(child(a,1)).front());
   }
+
   else if (a->kind == "NORMALIZE") {
     int minX, minY;
     listOfPairs = evaluateList(child(a,0));
@@ -181,6 +198,7 @@ list<pair<int, int> > evaluateList(AST* a) {
       it = next(it);
     }
   }
+
   else if (a->kind == "AMEND") {
     list<pair<int, int> > initialList = evaluateList(child(a,0));
     list<pair<int, int> >::iterator it = initialList.begin();
@@ -200,6 +218,7 @@ list<pair<int, int> > evaluateList(AST* a) {
       it = next(it);
     }
   }
+
   else if (a->kind == "ITH") {
     int position = evaluateInt(child(a,0));
     list<pair<int, int> > initialList = evaluateList(child(a,1));
@@ -214,6 +233,7 @@ list<pair<int, int> > evaluateList(AST* a) {
     }
     listOfPairs.push_back((*it));
   }
+
   else { // ID
     map<string,list<pair<int, int> > >::iterator it = dps.find(a->kind);
     if (it != dps.end())
@@ -221,14 +241,33 @@ list<pair<int, int> > evaluateList(AST* a) {
     else
       cout << a->kind + " was not declared" << endl;
   }
+
 	return listOfPairs;
 }
 
+// evaluates the boolean function
 bool evaluateCondition(AST* a) {
   bool result;
+
   if (a->kind == "NOT")
     result = !evaluateCondition(child(a,0));
-  else if (a->kind == "CHECK") {}
+
+  else if (a->kind == "CHECK") {
+    result = true;
+    list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+    listOfPairs.sort(compareTwoPairs);
+
+    list<pair<int, int> >::iterator it = listOfPairs.begin();
+    list<pair<int, int> >::iterator itAux = listOfPairs.begin();
+    it = next(it);
+    while (result and it != listOfPairs.end()) {
+      if ((*it).first == (*itAux).first)
+        result = false;
+      it = next(it);
+      itAux = next(itAux);
+    }
+  }
+
   else if (a->kind == "EMPTY") {
     list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
     if (listOfPairs.empty())
@@ -236,6 +275,7 @@ bool evaluateCondition(AST* a) {
     else
       result = false;
   }
+
   else if (a->kind == "==") {
     list<pair<int, int> > pairOne = evaluateList(child(a,0));
     list<pair<int, int> > pairTwo = evaluateList(child(a,1));
@@ -246,6 +286,7 @@ bool evaluateCondition(AST* a) {
     else
       result = false;
   }
+
   else if (a->kind == "!=") {
     list<pair<int, int> > pairOne = evaluateList(child(a,0));
     list<pair<int, int> > pairTwo = evaluateList(child(a,1));
@@ -256,6 +297,7 @@ bool evaluateCondition(AST* a) {
     else
       result = false;
   }
+
   else if (a->kind == ">") {
     list<pair<int, int> > pairOne = evaluateList(child(a,0));
     list<pair<int, int> > pairTwo = evaluateList(child(a,1));
@@ -267,6 +309,7 @@ bool evaluateCondition(AST* a) {
     else
       result = false;
   }
+
   else if (a->kind == "<") {
     list<pair<int, int> > pairOne = evaluateList(child(a,0));
     list<pair<int, int> > pairTwo = evaluateList(child(a,1));
@@ -278,37 +321,49 @@ bool evaluateCondition(AST* a) {
     else
       result = false;
   }
+
   else if (a->kind == "AND") {}
+
   else if (a->kind == "OR") {}
+
   return result;
 }
 
+// executes the instructions
 void execute(AST *a) {
 	if (a == NULL)
 		return;
+
   else if (a->kind == "list")
     return execute(a->down);
+
 	else if (a->kind == "=") {
 		dps[child(a,0)->kind] = evaluateList(child(a,1));
 	}
+
 	else if (a->kind == "WHILE") {
 		while (evaluateCondition(child(a,0))) {
 			execute(child(a,1));
 		}
 	}
+  
 	else if (a->kind == "IF") {
 		if (evaluateCondition(child(a,0))) {
 			execute(child(a,1));
 		}
 	}
+
 	else if (a->kind == "PLOT") {
 		list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+    cout << "PLOT: ";
     printListOfPairs(listOfPairs);
 	}
+
   // y = log(x) (?)
   // TODO: de momento hace lo mismo que PLOT
 	else if (a->kind == "LOGPLOT") {
 		list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+    cout << "LOGPLOT: ";
     printListOfPairs(listOfPairs);
 	}
 	
