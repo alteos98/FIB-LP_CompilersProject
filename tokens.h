@@ -95,6 +95,12 @@ extern void pair2();
 #endif
 
 #ifdef __USE_PROTOS
+void booleanExpr0(AST**_root);
+#else
+extern void booleanExpr0();
+#endif
+
+#ifdef __USE_PROTOS
 void booleanExpr1(AST**_root);
 #else
 extern void booleanExpr1();
@@ -131,4 +137,6 @@ extern SetWordType setwd2[];
 extern SetWordType zzerr8[];
 extern SetWordType zzerr9[];
 extern SetWordType zzerr10[];
+extern SetWordType zzerr11[];
+extern SetWordType zzerr12[];
 extern SetWordType setwd3[];

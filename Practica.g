@@ -131,7 +131,7 @@ list<pair<int, int> > evaluateList(AST* a) {
     //return listOfPairs;
   }
 
-  else if (a->kind == "par") {
+  else if (a->kind == "Pair") {
     listOfPairs.push_back(make_pair(evaluateInt(child(a,0)), evaluateInt(child(a,1))));
   }
 
@@ -336,6 +336,10 @@ bool evaluateCondition(AST* a) {
       result = false;
   }
 
+  else if (a->kind == "parenthesis") {
+    result = evaluateCondition(child(a,0));
+  }
+
   return result;
 }
 
@@ -427,8 +431,8 @@ plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>
 linterpretation: <<#0=createASTstring(_sibling, "list");>> (instruction)* ;
 instruction: ID ASIG^ returnList
 	| plot
-	| IF^ booleanExpr1 linterpretation ENDIF!
-  | WHILE^ booleanExpr1 linterpretation ENDWHILE!
+	| IF^ OP! booleanExpr1 CP! linterpretation ENDIF!
+  | WHILE^ OP! booleanExpr1 CP! linterpretation ENDWHILE!
 	;
 returnList: def
 	| (POP^ | NORMALIZE^ | AMEND^) OP! returnList CP! 
@@ -438,10 +442,11 @@ plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
 
 def: <<#0=createASTstring(_sibling, "def");>> literal (CONC! literal)* ;
 literal: (<<#0=createASTstring(_sibling, "literal");>> OB! pair1 (COMA! pair1)* CB!) | ID ;
-pair1: <<#0=createASTstring(_sibling, "par");>> pair2 ;
+pair1: <<#0=createASTstring(_sibling, "Pair");>> pair2 ;
 pair2: OA! NUM COMA! NUM CA! ;
 
-booleanExpr1: OP! booleanExpr2 ((AND^ | OR^) booleanExpr2)* CP! ;
+booleanExpr0: <<#0=createASTstring(_sibling, "parenthesis");>> OP! booleanExpr1 CP! ;
+booleanExpr1: ((booleanExpr2 | booleanExpr0) ((AND^ | OR^) (booleanExpr2 | booleanExpr0))*) ;
 booleanExpr2: (NOT^ | ) booleanExpr3;
 booleanExpr3: ((EMPTY^ | CHECK^) OP! def CP!) | (ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;
 ith: ITH^ OP! NUM COMA! def CP! ;
