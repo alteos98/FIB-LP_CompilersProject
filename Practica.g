@@ -373,10 +373,16 @@ void execute(AST *a) {
     printListOfPairs(listOfPairs);
 	}
 
-  // y = log(x) (?)
-  // TODO: de momento hace lo mismo que PLOT
+  // x = x
+  // y = log2(y)
 	else if (a->kind == "LOGPLOT") {
 		list<pair<int, int> > listOfPairs = evaluateList(child(a,0));
+    list<pair<int, int> >::iterator it = listOfPairs.begin();
+    while (it != listOfPairs.end()) {
+      if ((*it).second != 0)
+        (*it).second = log((*it).second);
+      it = next(it);
+    }
     cout << "LOGPLOT: ";
     printListOfPairs(listOfPairs);
 	}
