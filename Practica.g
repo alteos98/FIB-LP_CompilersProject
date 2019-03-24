@@ -224,8 +224,11 @@ list<pair<int, int> > evaluateList(AST* a) {
     list<pair<int, int> > initialList = evaluateList(child(a,1));
     list<pair<int, int> >::iterator it = initialList.begin();
 
-    if (position > initialList.size())
+    // en cas de que s'intenti accedir a una posició fora de rang ho mostrarem per pantalla
+    if (position > initialList.size()) {
+      cout << "Index " << position << " out of range" << endl;
       return listOfPairs;
+    }
 
     // find the 'position'-th element
     for (int i=0; i < position; ++i) {
@@ -433,8 +436,8 @@ int main() {
 #token NUM "[0-9]+"
 #token SPACE "[\ \n]" << zzskip();>>
 
-plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>>;
-linterpretation: <<#0=createASTstring(_sibling, "list");>> (instruction)* ;
+plots: linterpretation "@"! <<#0=createASTstring(_sibling, "DataPlotsProgram");>> ;
+linterpretation: (instruction)* <<#0=createASTstring(_sibling, "list");>> ;
 instruction: ID ASIG^ returnList
 	| plot
 	| IF^ OP! booleanExpr1 CP! linterpretation ENDIF!
@@ -446,12 +449,12 @@ returnList: def
 	;
 plot: (PLOT^ | LOGPLOT^) OP! returnList CP! ;
 
-def: <<#0=createASTstring(_sibling, "def");>> literal (CONC! literal)* ;
-literal: (<<#0=createASTstring(_sibling, "literal");>> OB! pair1 (COMA! pair1)* CB!) | ID ;
-pair1: <<#0=createASTstring(_sibling, "Pair");>> pair2 ;
+def: literal (CONC! literal)* <<#0=createASTstring(_sibling, "def");>> ;
+literal: (OB! pair1 (COMA! pair1)* CB! <<#0=createASTstring(_sibling, "literal");>>) | ID ;
+pair1: pair2 <<#0=createASTstring(_sibling, "Pair");>> ;
 pair2: OA! NUM COMA! NUM CA! ;
 
-booleanExpr0: <<#0=createASTstring(_sibling, "parenthesis");>> OP! booleanExpr1 CP! ;
+booleanExpr0: OP! booleanExpr1 CP! <<#0=createASTstring(_sibling, "parenthesis");>> ;
 booleanExpr1: ((booleanExpr2 | booleanExpr0) ((AND^ | OR^) (booleanExpr2 | booleanExpr0))*) ;
 booleanExpr2: (NOT^ | ) booleanExpr3;
 booleanExpr3: ((EMPTY^ | CHECK^) OP! def CP!) | (ith (EQ^ | NEQ^ | CA^ | OA^) ith) ;

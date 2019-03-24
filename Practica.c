@@ -256,8 +256,11 @@ int position = evaluateInt(child(a,0));
 list<pair<int, int> > initialList = evaluateList(child(a,1));
 list<pair<int, int> >::iterator it = initialList.begin();
 
-    if (position > initialList.size())
+    // en cas de que s'intenti accedir a una posició fora de rang ho mostrarem per pantalla
+if (position > initialList.size()) {
+cout << "Index " << position << " out of range" << endl;
 return listOfPairs;
+}
 
     // find the 'position'-th element
 for (int i=0; i < position; ++i) {
@@ -467,7 +470,6 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
-  (*_root)=createASTstring(_sibling, "list");
   {
     zzBLOCK(zztasp2);
     zzMake0;
@@ -479,6 +481,7 @@ AST **_root;
     zzEXIT(zztasp2);
     }
   }
+  (*_root)=createASTstring(_sibling, "list");
   zzEXIT(zztasp1);
   return;
 fail:
@@ -655,7 +658,6 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
-  (*_root)=createASTstring(_sibling, "def");
   literal(zzSTR); zzlink(_root, &_sibling, &_tail);
   {
     zzBLOCK(zztasp2);
@@ -669,6 +671,7 @@ AST **_root;
     zzEXIT(zztasp2);
     }
   }
+  (*_root)=createASTstring(_sibling, "def");
   zzEXIT(zztasp1);
   return;
 fail:
@@ -695,7 +698,6 @@ AST **_root;
       zzBLOCK(zztasp2);
       zzMake0;
       {
-      (*_root)=createASTstring(_sibling, "literal");
       zzmatch(OB);  zzCONSUME;
       pair1(zzSTR); zzlink(_root, &_sibling, &_tail);
       {
@@ -710,7 +712,10 @@ AST **_root;
         zzEXIT(zztasp3);
         }
       }
-      zzmatch(CB);  zzCONSUME;
+      zzmatch(CB); 
+      (*_root)=createASTstring(_sibling, "literal");
+ zzCONSUME;
+
       zzEXIT(zztasp2);
       }
     }
@@ -742,8 +747,8 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
-  (*_root)=createASTstring(_sibling, "Pair");
   pair2(zzSTR); zzlink(_root, &_sibling, &_tail);
+  (*_root)=createASTstring(_sibling, "Pair");
   zzEXIT(zztasp1);
   return;
 fail:
@@ -791,10 +796,12 @@ AST **_root;
   zzBLOCK(zztasp1);
   zzMake0;
   {
-  (*_root)=createASTstring(_sibling, "parenthesis");
   zzmatch(OP);  zzCONSUME;
   booleanExpr1(zzSTR); zzlink(_root, &_sibling, &_tail);
-  zzmatch(CP);  zzCONSUME;
+  zzmatch(CP); 
+  (*_root)=createASTstring(_sibling, "parenthesis");
+ zzCONSUME;
+
   zzEXIT(zztasp1);
   return;
 fail:
